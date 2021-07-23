@@ -1,0 +1,171 @@
+
+#include "ros/ros.h"
+#include "ball_chaser/DriveToTarget.h"
+#include <sensor_msgs/Image.h>
+
+// Client
+ros::ServiceClient g_Client;
+
+// Send drive commands to the drive_bot node
+void drive_bot (float vel_x, float rate_z, const bool nodrive=true) {
+
+    ROS_INFO_STREAM ("Driving to target ");
+
+    ball_chaser::DriveToTarget srv;
+    srv.request.linear_x = vel_x;    
+    srv.request.angular_z = rate_z;
+
+    // nodrive is used todebug the ball finding algorithm
+    if (!nodrive && !g_Client.call (srv)) {
+	ROS_ERROR ( "process_image failed to deliver svcReq to drive_bot!");
+    }
+    return;
+}
+
+static bool gMoving = false;
+
+void image_callback (const sensor_msgs::Image image) {
+
+    // ROS_INFO (" process_image : Got an Image! " );
+
+    uint height = image.height;
+    uint width = image.width;
+    uint white_pixel_value = 255;
+
+    for (uint row=0; row < width; row++) {
+
+	for (uint col=0; col < width; col++) {
+	    if (image.data[row*width + col] == white_pixel_value) {
+		ROS_INFO ( " ball @ %d ", col );
+	    }
+	}
+	
+    }
+
+    // STOPPED || Stopping
+    if ( !blBallInView ) {
+	if ( gMoving) {
+	    drive_bot (0.0, 0.0);
+	    gMoving = false;
+	}
+	return;
+    }
+    
+    if ( white_pixel_column <= width/3 ) {
+	// Drive left (+ rZ)
+	drive_bot (0.15, 0.1);
+    } else if ( white_pixel_column >= (2*width)/3 ) {
+	// Drive right (- rZ)
+	drive_bot (0.15, -0.1);
+    } else {
+	// Drive right straight ahead
+	drive_bot (0.15, 0.0);
+    }
+
+    gMoving = true;
+    
+    return;
+}
+void on_hold_image_callback (const sensor_msgs::Image image) {
+
+    // ROS_INFO (" process_image : Got an Image! " );
+
+    uint height = image.height;
+    uint width = image.width;
+    uint white_pixel_value = 255;
+
+    uint white_pixel_column = 0;
+    bool blBallInView = false;
+
+    // We'll compute the raton of white pixel in the image
+    // If the ratio is very high, the ball is close and we stop
+    long unsigned int white_count = 0L;
+
+    int aCols[2] = {-1, -1};
+    in aColsIndex = 0;
+
+    for (uint row=0; row < width; row++) {
+
+	bool whiteFound = false;
+	int firstColWhite = -1;
+	int lastColWhite = -1;
+
+	int aBounds[2] = {-1, -1};
+	int index = 0;
+
+	for (uint col=0; col < width; col++) {
+	    if (image.data[row*width + col] == white_pixel_value) {
+
+		whiteFound = true;
+		white_count++;
+
+		aBounds[index++] = col;
+		index = index > 1 : 1 : index;
+		
+		aCols[aColsIndex++] = col;
+		aColsIndex = aColsIndex > 1 ? 1 : aColsIndex;
+		
+		white_pixel_column = col;
+		blBallInView = true;
+	    }
+	}
+	
+    }
+
+    // STOPPED || Stopping
+    if ( !blBallInView ) {
+	if ( gMoving) {
+	    drive_bot (0.0, 0.0);
+	    gMoving = false;
+	}
+	return;
+    }
+    
+    if ( white_pixel_column <= width/3 ) {
+	// Drive left (+ rZ)
+	drive_bot (0.15, 0.1);
+    } else if ( white_pixel_column >= (2*width)/3 ) {
+	// Drive right (- rZ)
+	drive_bot (0.15, -0.1);
+    } else {
+	// Drive right straight ahead
+	drive_bot (0.15, 0.0);
+    }
+
+    gMoving = true;
+    
+    return;
+}
+
+int main (int argc, char* argv[]) {
+
+    // Boiler plate
+    ros::init (argc, argv, "process_image");
+    ros::NodeHandle handle;
+
+    ROS_INFO ( " starting process_image ..." );
+
+    // We'll be requesting moves
+    g_Client = handle.serviceClient<ball_chaser::DriveToTarget>("/ball_chaser/command_robot");
+
+    if (true) {
+	// Wait for ROS start
+	int start_time;
+	while (not start_time) {
+	    start_time = ros::Time::now().toSec() - start_time;
+	}
+    }
+
+    // We'll subsrice to camera images
+    int qsize = 10;
+    ros::Subscriber sub = handle.subscribe ( "/camera/rgb/image_raw", qsize, image_callback);
+
+    
+    ROS_INFO (" ... process_image is in the loop! " );
+
+    // Into the events loop
+    ros::spin();
+
+    return (0);
+}
+
