@@ -17,21 +17,32 @@ The ball_chaser package will contain two nodes. First node is drive_bot which pr
 The second node, process_image, subscribes to images from the camera. As images are received they are processed to find the white ball if is is in the image. If the ball is detected, process_image requests service from drive_robot to move toward the ball. A launch file, ball_chaser.launch is created to bring up the two nodes of the ball_chaser package.
 
 # Installation and Running
-These are the step to run the project on an Ubuntu system:
+These are the steps to run the project on an Ubuntu system:
 
 - clone the repository;
-- remove the build and devel directories under the catkin_ws directory;
-- execute the 'catkin_make' command.
+- execute the 'catkin_make' command in the catkin_ws directory.
 
 After the project has been compiled:
 
-- in console window execute
-> roslaunch my_robot world.launch
+- in s console window execute
+roslaunch my_robot world.launch
+
 This brings up RViz and Gazebo with the robot and white ball.
 
 - in another console exeucte
-> roslaunch ball_chaser ball_chaser_launch
-This brings up the nodes that activate the robot to chase the white ball.
+roslaunch ball_chaser ball_chaser_launch
+
+This brings up the nodes that activate the robot to chase the white ball. The robot will immediatley start rotating counter-clockwise. The white ball will not be in view. You can select and translate the ball so that the robot will see it at some point in its scan. Once the ball comes into view, the scanning rotation stops and the robot heads for the ball.
+
+Because the robot will never cease chasing the ball, it is likely to end up smack up against it perhaps up against a wall. You will then want to reset the proejct. To stop the robot, or in general command it to move,
+
+- terminate the ball_chaser process
+- issue the command
+rosrun ball_chaser drive_bot
+- in another console issue the command
+rosservice call /ball_chaser/command_robotbot "0" "0"
+
+This stops the robot. The two arguments in quotes are linear speed and rotational rate respectively. To drive the robot choose non-zero values.
 
 # Installation and Running
 The ball_chaser package is designed to command the robot to turn counter-clockwise in place until the white ball is detected. When the white ball comes into view, the system ensures the whole ball is within view, then moves in the direction of the white ball. The homing strategy uses a fixed forward speed, and a simple proportional control of rotational rate with max/min limits clamping. Heading control seeks to keep the ball in the center of view. If the ball goes out of view, the robot stops forward motion and commences fixed counter-clockwise rotation until the ball is seen again.
