@@ -45,13 +45,13 @@ and eventually flip over on its back.
 
 ![climbing](</workspace/images/bot_rolled_over.png>)
 
-Because the robot will never cease chasing the ball, it is likely to end up smack up against it perhaps up against a wall. You will then want to reset the proejct. To stop the robot, or in general command it to move,
+Because the robot will never cease chasing the ball, it is likely to end up smack up against it perhaps up against a wall. You will then want to reset the project. To stop the robot, or in general command it to move,
 
 - terminate the ball_chaser process
 - issue the command
->>rosrun ball_chaser drive_bot
+>rosrun ball_chaser drive_bot
 - in another console issue the command
->>rosservice call /ball_chaser/command_robotbot "0" "0"
+>rosservice call /ball_chaser/command_robotbot "0" "0"
 
 This stops the robot. The two arguments in quotes are linear speed and rotational rate respectively. To drive the robot choose non-zero values.
 
