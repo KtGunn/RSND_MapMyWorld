@@ -25,12 +25,12 @@ These are the steps to run the project on an Ubuntu system:
 After the project has been compiled:
 
 - in a console window execute<br>
->>roslaunch my_robot world.launch
+>roslaunch my_robot world.launch
 
 This brings up RViz and Gazebo with the robot and white ball.
 
 - in another console execute<br>
->>roslaunch ball_chaser ball_chaser_launch
+>roslaunch ball_chaser ball_chaser_launch
 
 This brings up the nodes that activate the robot to chase the white ball. The robot will immediatley start rotating counter-clockwise. The white ball will not be in view. You can select and translate the ball so that the robot will see it at some point in its scan. Once the ball comes into view, the scanning rotation stops and the robot heads for the ball.
 
