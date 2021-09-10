@@ -21,3 +21,21 @@ The following shows the results obtained for this project.
 The application was developed in Linux Ubuntu version 16.04 with ROS distribution Kinetic. The application depends on a few packages that must be present: navigation, map-server, move-base and amcl. These can be installed using,
 
 > sudo apt install ros-kinetic-<name_of_required_package>
+
+The repository should be cloned
+
+> git clone https://github.com/KtGunn/Project3_WhereAmI.git
+
+The user must navigate to the catkin_ws sub-directory. In case the two directories 'devel' and 'setup' are present, they should be removed, followed by the compliation command, catkin_make
+
+> rm -rf devel setup && catkin_make
+
+To bring up the application the following command are issued, each in its own console,
+
+> roslaunch my_robot world.launch
+
+This brings up the simulation environment and RViz configured to view, observe and monitor the progress of locazliation.
+
+![world_rviz](</workspace/images/launch_world.png>)
+
+Note that the windows have been re-sized and moved. The windows are likely to overlap at start up. Note also that RViz renders a robot in a default map with a laser scan showing. Note the scan matches the walls of the environment and the robot's location within it, a good sign.
