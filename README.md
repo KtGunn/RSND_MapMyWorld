@@ -46,4 +46,6 @@ The following command issued in a new console brings up the amcl node.
 
 Now RViz shows the robot in a localization map with a cluster of particles surrounding the robot. This indicates that the amcl node is up and running, waiting for robot motion and ready to estimate the robot's true location. Note that the robot is accurately located but the amcl algorithm has yet to receive odometry and sensor data to know that.
 
+![world_rviz](</workspace/images/launch_amcl.png>)
+
 Also to note is the localization map in RViz. That map was created using the 'pgm_map_creator' package. This package is not part of the nodes launched. It was used in an off-line mode to create a localization map from the simulation environment as input. The map was edited to include only wall objects, i.e. the fountain, hydrant and circular columns were removed.
