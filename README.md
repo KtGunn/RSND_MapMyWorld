@@ -30,7 +30,7 @@ The user must navigate to the catkin_ws sub-directory. In case the two directori
 
 > rm -rf devel setup && catkin_make
 
-To bring up the application the following command are issued, each in its own console,
+To bring up the application the following commands are issued, each in its own console,
 
 > roslaunch my_robot world.launch
 
@@ -39,3 +39,11 @@ This brings up the simulation environment and RViz configured to view, observe a
 ![world_rviz](</workspace/images/launch_world.png>)
 
 Note that the windows have been re-sized and moved. The windows are likely to overlap at start up. Note also that RViz renders a robot in a default map with a laser scan showing. Note the scan matches the walls of the environment and the robot's location within it, a good sign.
+
+The following command issued in a new console brings up the amcl node.
+
+> roslaunch my_robot amcl.launch
+
+Now RViz shows the robot in a localization map with a cluster of particles surrounding the robot. This indicates that the amcl node is up and running, waiting for robot motion and ready to estimate the robot's true location. Note that the robot is accurately located but the amcl algorithm has yet to receive odometry and sensor data to know that.
+
+Also to note is the localization map in RViz. That map was created using the 'pgm_map_creator' package. This package is not part of the nodes launched. It was used in an off-line mode to create a localization map from the simulation environment as input. The map was edited to include only wall objects, i.e. the fountain, hydrant and circular columns were removed.
